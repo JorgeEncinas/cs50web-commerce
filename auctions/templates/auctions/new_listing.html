@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container-fluid">
+    <form action="{% url 'new_listing' %}" method="POST">
+        {% csrf_token %}
+        {% for field in listing_form %}
+            <div class="row">
+                <div class="col-sm-10">
+                    {{ field.errors }}
+                    <div class="col-sm-4">
+                        {{ field.label_tag }}
+                    </div>
+                    <div class="col-sm-4">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                        <p class="help">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        <input type="submit" value="Post new listing" style="margin: 5px;">
+    </form>
+</div>
+{% endblock %}

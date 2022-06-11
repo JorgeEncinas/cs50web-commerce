@@ -1,0 +1,41 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+
+    {% if message %}
+    <div>
+        {{message|safe}}
+    </div>
+    {% endif %}
+
+    <div class="container-fluid">
+        <div class="row">
+    {% if listings %}
+        {% for listing in listings %}
+        <a href="{% url 'get_listing' listing.0.listingID %}" class="category-link-cont">
+            <div class="col-md-4">
+                <div class="row flex-cont">
+                    <div class="col-sm-4">
+                        {% if listing.0.imageURL%}
+                        <img src="{{listing.0.imageURL}}" class="img-rounded cat-content-img">
+                        {% else %}
+                        <img src="https://cf.shopee.co.id/file/c2754f7de23759399d10b1107d481bf4" class="img-rounded">
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-8">
+                        <div style="display: flex; justify-content: left; align-items: center;">
+                            <h3>{{listing.0.title}}</h3><h4>{{listing.1.amount}}</h4>
+                        </div>
+                        <div style="display:flex; justify-content: left; align-items: center;">
+                            <p>{{listing.0.description|truncatewords:25}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    {% endif%}
+        </div>
+    </div>
+{% endblock %}

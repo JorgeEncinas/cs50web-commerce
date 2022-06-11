@@ -1,0 +1,50 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{ listing.title }} | Auctions
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="">
+                    <img src="{{listing.imageURL}}" class="cat-content-img">
+                </div>
+                <div>
+                    <div>
+                        <h2>{{listing.title}}</h2>
+                        <h5>Listing by user <b>{{listing.ownerID.first_name}} {{listing.ownerID.last_name}}</b> on {{ listing.creationDatetime}}</h5>
+                    </div>
+                    <div>
+                        {% if user_already_bookmarked %}
+                            <a href="">Already on your wishlist</a>
+                        {% else %}
+                            <a href="">Save to wishlist</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <h4>Current bid:{% if current_max_bid %}{{ current_max_bid }}{% else %} No bids yet{% endif %}</h4>
+                    <h6>Starting bid: {{ listing.startingBid }}</h6>
+                    <p>{{listing.description}}</p>
+                </div>
+                <div>
+                    
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div>
+                    <form action="{% url 'get_listing' listing.listingID %}" method="POST">
+                        {% for field in bid_form %}
+                            {{ field.label_tag }} <br>
+                            {{ field }} <br>
+                            {{ field.errors }} <br>
+                        {% endfor %}
+                        <input type="submit" value="Confirm bid">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
