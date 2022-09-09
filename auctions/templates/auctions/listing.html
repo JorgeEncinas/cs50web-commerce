@@ -5,6 +5,11 @@
 {% endblock %}
 
 {% block body %}
+    <div>
+        {% if message %}
+            {{ message }}
+        {% endif %}
+    </div>
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-8">
@@ -17,16 +22,31 @@
                         <h5>Listing by user <b>{{listing.ownerID.first_name}} {{listing.ownerID.last_name}}</b> on {{ listing.creationDatetime}}</h5>
                     </div>
                     <div>
+                    <form action="{% url 'change_watchlist' listing.listingID %}" method="POST">
+                        {% csrf_token %}
                         {% if user_already_bookmarked %}
-                            <a href="">Already on your wishlist</a>
-                        {% else %}
-                            <a href="">Save to wishlist</a>
+                            <button>Remove from watchlist</button>
+                        {% elif user.is_authenticated %}
+                            <button>Save to watchlist</button>
+                        {% endif %}
+                        
+                    </form>
+                        {% if listing.ownerID == request.user %}
+                            <form action="{% url 'close_auction' listing.listingID %}" method="POST">
+                                {% csrf_token %}
+                                <button>Close Auction</button>
+                            </form>
                         {% endif %}
                     </div>
                 </div>
                 <div>
                     <h4>Current bid:{% if current_max_bid %}{{ current_max_bid }}{% else %} No bids yet{% endif %}</h4>
                     <h6>Starting bid: {{ listing.startingBid }}</h6>
+                    {% if listing.active %}
+                        <h6>ACTIVE</h6>
+                    {% else %}
+                        <h6>CLOSED</h6>
+                    {% endif %}
                     <p>{{listing.description}}</p>
                 </div>
                 <div>
@@ -35,16 +55,44 @@
             </div>
             <div class="col-sm-4">
                 <div>
-                    <form action="{% url 'get_listing' listing.listingID %}" method="POST">
+                    <form action="{% url 'make_bid' listing.listingID %}" method="POST">
+                        {% csrf_token %}
+                        <h6>{{bid_message}}</h6>
+                        
                         {% for field in bid_form %}
                             {{ field.label_tag }} <br>
                             {{ field }} <br>
                             {{ field.errors }} <br>
                         {% endfor %}
-                        <input type="submit" value="Confirm bid">
+                        {% if user.is_authenticated %}
+                            <input type="submit" value="Confirm bid">
+                        {% else %}
+                            <p>Log in to bid.</p>
+                        {% endif %}
                     </form>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <form action="{% url 'new_comment' listing.listingID %}" method="POST">
+                    {% csrf_token %}
+                    {{ comment_form }}
+                    <button>Comment</button>
+                </form>
+            </div>
+            {% if comments %}
+                {% for comment in comments %}
+                <div class="col-md-10">
+                    <h6>By user <b>"{{comment.userID.first_name}} {{comment.userID.last_name}}"</b> on {{comment.timestamp}}</h6>
+                    <p>{{comment.comment}}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-md-10">
+                    <h6>No comments as of yet!</h6>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

@@ -24,19 +24,20 @@ class Listing(models.Model):
     description = models.CharField(max_length=800, null=False)
     startingBid = models.DecimalField(max_digits=14, decimal_places=2, null=False)
     imageURL = models.URLField(null=True, blank=True)
-    categoryID = models.ForeignKey('Category', on_delete=models.RESTRICT, related_name="category_listings", null=True, blank=True)
-    ownerID = models.ForeignKey('User', on_delete=models.CASCADE, related_name="owned_listings")
+    categoryID = models.ForeignKey('Category', on_delete=models.SET_DEFAULT, related_name="category_listings", null=True, blank=True, default=0)
+    ownerID = models.ForeignKey('User', on_delete=models.PROTECT, related_name="owned_listings")
     active = models.BooleanField(default = True)
     creationDatetime = models.DateTimeField(auto_now_add = True)
     users_watchlisted = models.ManyToManyField(User, related_name="watchlisted_listings")
+    winnerID = models.ForeignKey('User',on_delete=models.PROTECT, related_name="listings_won", null=True)
 
     def __str__(self):
         return self.title
 
 class Bid(models.Model):
     bidID = models.AutoField(primary_key=True)
-    userID = models.ForeignKey('User', on_delete=models.CASCADE, related_name="user_bids")
-    listingID = models.ForeignKey('Listing', on_delete=models.CASCADE, related_name="listing_bids")
+    userID = models.ForeignKey('User', on_delete=models.PROTECT, related_name="user_bids")
+    listingID = models.ForeignKey('Listing', on_delete=models.PROTECT, related_name="listing_bids")
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     bidDatetime = models.DateTimeField(auto_now_add = True)
 
@@ -45,6 +46,7 @@ class Bid(models.Model):
 
 class Comment(models.Model):
     commentID = models.AutoField(primary_key=True)
+    listingID = models.ForeignKey('Listing', on_delete=models.PROTECT, related_name="listing_comments")
     userID = models.ForeignKey('User', on_delete=models.CASCADE, related_name="user_comments")
     comment = models.TextField()
     timestamp = models.DateTimeField(auto_now=True)

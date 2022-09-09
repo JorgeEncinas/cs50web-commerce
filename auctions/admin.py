@@ -9,25 +9,33 @@ class CategoryAdmin(admin.ModelAdmin):
 def close_listings(modeladmin, request, queryset):
     queryset.update(active=False)
 
+@admin.action(description="Open selected listings")
+def open_listings(modeladmin, request, queryset):
+    queryset.update(active=True)
+
+@admin.action(description="Ban comment")
+def ban_comment(modeladmin, request, queryset):
+    queryset.update(comment="This comment has been removed by the site administrators.")
+
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
     date_hierarchy = 'creationDatetime'
-    list_display = ('listingID', 'title', 'startingBid', 'active', 'creationDatetime', 'ownerID', 'categoryID')
-    fieldsets = (
-        ('Identifying data', {
-            'fields': ('listingID', 'title', 'startingBid')
-        }),
-        ('Metadata', {
-            'fields': ('active', 'creationDatetime')
-        }),
-        ('Belongs to:', {
-            'fields': ('ownerID', 'categoryID')
-        }),
-        ('Details given:', {
-            'fields': ('description', 'imageURL')
-        }),
-    )
-    actions = [close_listings]
+    list_display = ('listingID', 'title', 'startingBid', 'active', 'ownerID', 'categoryID')
+    #fieldsets = (
+    #    ('Identifying data', {
+    #        'fields': ('listingID', 'title', 'startingBid')
+    #    }),
+    #    ('Metadata', {
+    #        'fields': 'active'
+    #    }),
+    #    ('Belongs to:', {
+    #        'fields': ('ownerID', 'categoryID')
+    #    }),
+    #    ('Details given:', {
+    #        'fields': ('description', 'imageURL')
+    #    }),
+    #)
+    actions = [close_listings, open_listings]
 
 @admin.register(Bid)
 class BidAdmin(admin.ModelAdmin):
